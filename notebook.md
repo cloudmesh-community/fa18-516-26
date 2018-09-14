@@ -10,16 +10,14 @@ This is the progress report for E516-Engineering cloud computing course.
 * Starting reading chapter 8: Data Center
 
 # Week Fri 09/7/18 - Thu 09/13/18
-* Participating in Piazza discussion and answering other students' question
-* Selecting the following sections for contribution:
+
+* Fixed the typos in the whole repository including 750+ typos on 150+ files. Note that doing this in a way not to damage the repository takes more time than expected.  
+* Contributed the following sections:
 	* Lambda Expressions
-	* Generators 
-	* Non Blocking Threads
-	* Subprocess
-	* Queue 
-* Selecting the following chapter for contribution: 
-	* Apache OpenWhisk
+	* Iterators 
+* Participating in Piazza discussion and answering other students' question
 * Starting working on `Parallel Remote Jobs` assignment, part `c`, `c1` and `e`: 
 > c) develop a task mechanism to manage and distribute the jobs on the machine using subprocess and a queue. Start with one job per machine,  
 c.1) take c and do a new logic where each machine can take multiple jobs
-e) develop a test program that distributes a job to the machines calculates the job and fetches the result back. This is closely related to c, but instead of integrating it in c the movement of the data to and from the job is part of a separate mechanism, It is essentially the status of the calculation. Once all results are in do the reduction into a single result. Remember you could do result calculations in parallel even if other results are not there i
+e) develop a test program that distributes a job to the machines calculates the job and fetches the result back. 
+

@@ -21,3 +21,13 @@ This is the progress report for E516-Engineering cloud computing course.
 c.1) take c and do a new logic where each machine can take multiple jobs
 e) develop a test program that distributes a job to the machines calculates the job and fetches the result back. 
 
+# Week Fri 09/14/18 - Thu 09/20/18
+
+* Contributing a chapter namely `Parallel Computing In Pythong` containing sections for:
+	* Thread vs Threading 
+	* Locks in Threading
+  * Process
+  * Pool
+  * Locks in multiprocessing
+  * Process communication
+

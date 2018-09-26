@@ -31,3 +31,8 @@ e) develop a test program that distributes a job to the machines calculates the 
   * Locks in multiprocessing
   * Process communication
 
+# Week Fri 09/21/18 - Thu 09/27/18
+
+* Updating `README.yml` file and adding the contributions to it. 
+*
+

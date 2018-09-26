@@ -4,3 +4,22 @@ owner:
   lastname: "Andalibi"
   hid: "fa18-516-26"
   community: "e516"
+section:
+  - title: Lambda Expressions
+    url: https://github.com/cloudmesh-community/book/blob/master/chapters/prg/python/python.md#lambda-expressions-new
+  - title: Iterators
+    url: https://github.com/cloudmesh-community/book/blob/master/chapters/prg/python/python.md#iterators
+chapter: 
+  - title: Parallel Programming in Python
+    url: https://github.com/cloudmesh-community/book/blob/master/chapters/prg/python/python-parallel.md
+project:
+  - title: TBD
+    url: TBD 
+other:
+  - activity: Fixing typos in md files
+    url: https://github.com/cloudmesh-community/book/commit/e0df3d097935f09fc8abffd7801f0c3b5d01ec42
+  - activity: Fixing typos in bib and tex files
+    url: https://github.com/cloudmesh-community/book/commit/69f9e1e6e9c6cf2c4c2f044b58c23643dd9cce9e
+  - activity: Fixing typos in makefiles, dot, java, sh and conf files.
+    url: https://github.com/cloudmesh-community/book/commit/e8c71365b350ba31843b3d876bdd3d2dfcd1008c
+

@@ -35,3 +35,4 @@ e) develop a test program that distributes a job to the machines calculates the 
 
 * Updating `README.yml` file and adding the contributions to it.
 * First commit of Apache OpenWhisk chapter. 
+* OpenWhisk synopsis and workflow subsections added. 

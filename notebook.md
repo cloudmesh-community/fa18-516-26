@@ -36,3 +36,9 @@ e) develop a test program that distributes a job to the machines calculates the 
 * Updating `README.yml` file and adding the contributions to it.
 * First commit of Apache OpenWhisk chapter. 
 * OpenWhisk synopsis and workflow subsections added. 
+
+# Week Fri 09/28/18 - Thu 10/04/18 
+
+Note: I had two midterms this week
+* Answering some question of students in Piazza
+* Fixing the `epub` symbol issue in Linux and posting it in `FAQs` in Piazza

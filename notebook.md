@@ -42,3 +42,11 @@ e) develop a test program that distributes a job to the machines calculates the 
 Note: I had two midterms this week
 * Answering some question of students in Piazza
 * Fixing the `epub` symbol issue in Linux and posting it in `FAQs` in Piazza
+
+# Week Fri 10/05/18 - Thu 10/11/18 
+
+I was concentrating on reading the book. On the technical side, I was working on:
+
+* Virtualization, specifically QEMU/KVM and docker.
+* Amazon AWS services (free account)
+* Microsoft Azure services (free account) 

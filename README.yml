@@ -9,8 +9,9 @@ section:
     url: https://github.com/cloudmesh-community/book/blob/master/chapters/prg/python/python.md#lambda-expressions-new
   - title: Iterators
     url: https://github.com/cloudmesh-community/book/blob/master/chapters/prg/python/python.md#iterators
-chapter: 
+paper: 
   - title: Parallel Programming in Python
+    keyword: Python parallel
     url: https://github.com/cloudmesh-community/book/blob/master/chapters/prg/python/python-parallel.md
 project:
   - title: TBD

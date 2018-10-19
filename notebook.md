@@ -50,3 +50,9 @@ I was concentrating on reading the book. On the technical side, I was working on
 * Virtualization, specifically QEMU/KVM and docker.
 * Amazon AWS services (free account)
 * Microsoft Azure services (free account) 
+
+# Week Fri 10/12/18 - Thu 10/18/18 
+
+* Completing the OpenWhisk workflow and submitting pull request. 
+* Completing the installation process of the OpenWhisk locally
+* Starting the hello world example of OpenWhisk for running locally 

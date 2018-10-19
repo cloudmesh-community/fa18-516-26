@@ -56,3 +56,9 @@ I was concentrating on reading the book. On the technical side, I was working on
 * Completing the OpenWhisk workflow and submitting pull request. 
 * Completing the installation process of the OpenWhisk locally
 * Starting the hello world example of OpenWhisk for running locally 
+
+# Week Fri 10/19/18 - Thu 10/25/18 
+
+* OpenWhisk chapter containing OpenWhisk workflow, local setup tutorial, hello-world example and custom action example completed, pull request made and merged 
+*
+

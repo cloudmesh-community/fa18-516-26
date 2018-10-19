@@ -13,6 +13,9 @@ paper:
   - title: Parallel Programming in Python
     keyword: Python parallel
     url: https://github.com/cloudmesh-community/book/blob/master/chapters/prg/python/python-parallel.md
+  - title: OpenWhisk
+    keyword: OpenWhisk
+    url: https://github.com/cloudmesh-community/book/blob/master/chapters/faas/openwhisk.md
 project:
   - title: TBD
     url: TBD 

@@ -23,7 +23,26 @@ optional arguments:
                    cannot be collected later). (default: False)
 
 ```
-The two mandatory arguments are `ConfPath` defining the path of the configuration file and `ProcNum` which indicates the number of process that will be used to submit the jobs. The optional argument `CProcNum` defines the number of processes that will be used for collecting the results. The `suffix` can be used for distinguishing several instances of the same runs on same set of nodes and the `nometa` flag is in case the user does not want to keep the metadata. The metadata can be later used for retrieving the results that needs a lot of time to run and you do not want to let the script run for that amount of time.
+The two mandatory arguments are `ConfPath` defining the path of the configuration file and `ProcNum` which indicates the number of process that will be used to submit the jobs. The optional argument `CProcNum` defines the number of processes that will be used for collecting the results. The `suffix` can be used for distinguishing several instances of the same runs on same set of nodes and the `nometa` flag is in case the user does not want to keep the metadata. The metadata can be later used for retrieving the results that needs a lot of time to run and you do not want to let the script run for that amount of time. This is a sample usage of this tool:
+
+```console
+$ ./run_in_parallel.py config_file.ini 4
+Remote Pid on NODE4: 29418
+Remote Pid on NODE3: 29422
+Remote Pid on NODE1: 20616
+Remote Pid on NODE2: 20619
+Remote Pid on NODE5: 20841
+collecting results
+Results from NODE1 collected
+Results from NODE2 collected
+Results from NODE5 collected
+waiting for other results...
+Results from NODE3 collected
+Results from NODE4 collected
+waiting for other results...
+All of the remote results collected
+```
+
 
 ### Configuration file
 
@@ -35,7 +54,7 @@ This is an example of configuration file with two nodes:
 ```
 [NODE1]
     hostname=machine1
-    sshconfigpath=/home/corriel/vms/ubuntu14/sshconfig1
+    sshconfigpath=~/vms/ubuntu14/sshconfig1
     script_path=./input/test_script_filein_fileout.sh
     remote_path=~/
     arg_type=params+file
@@ -46,7 +65,7 @@ This is an example of configuration file with two nodes:
     local_output_path=./output
 [NODE2]
     hostname=machine2
-    sshconfigpath=/home/corriel/vms/ubuntu14/sshconfig2
+    sshconfigpath=~/vms/ubuntu14/sshconfig2
     script_path=./input/inf_script_stdin_fileout.sh
     remote_path=~/
     arg_type=params

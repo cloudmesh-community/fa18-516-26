@@ -109,3 +109,7 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+/project-code/parallel_jobs/output
+/project-code/parallel_jobs/metadata
+/project-code/parallel_jobs/Pipfile
+/project-code/parallel_jobs/Pipfile.lock

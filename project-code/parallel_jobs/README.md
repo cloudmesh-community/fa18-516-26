@@ -1,6 +1,36 @@
 # Parallel Remote Jobs
 
-This is a tool to submit jobs to remote hosts in parallel. The information of the nodes should be provided to the tool using a configuration file. This is an example of configuration file with two nodes:
+This is a tool to submit jobs to remote hosts in parallel:
+
+```console
+$ ./run_in_parallel.py
+usage: run_in_parallel.py [-h] [--CProcNum Num] [--suffix suffix] [--nometa]
+                          ConfPath ProcNum
+
+Running remote parallel jobs
+
+positional arguments:
+  ConfPath         Path of configuration file
+  ProcNum          Number of processes
+
+optional arguments:
+  -h, --help       show this help message and exit
+  --CProcNum Num   Number of processes used for collecting the results.
+                   (default: 1)
+  --suffix suffix  suffix to be added to output file names. (default:
+                   _20181021_13061889)
+  --nometa         If used, the metadata will not be saved (warning: results
+                   cannot be collected later). (default: False)
+
+```
+The two mandatory arguments are `ConfPath` defining the path of the configuration file and `ProcNum` which indicates the number of process that will be used to submit the jobs. The optional argument `CProcNum` defines the number of processes that will be used for collecting the results. The `suffix` can be used for distinguishing several instances of the same runs on same set of nodes and the `nometa` flag is in case the user does not want to keep the metadata. The metadata can be later used for retrieving the results that needs a lot of time to run and you do not want to let the script run for that amount of time.
+
+### Configuration file
+
+The information of the nodes should be provided to the tool using a configuration file.
+
+
+This is an example of configuration file with two nodes:
 
 ```
 [NODE1]

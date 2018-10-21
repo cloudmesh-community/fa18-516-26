@@ -17,8 +17,9 @@ import sys
 import pickle
 from datetime import datetime
 
-#TODO cleanup
+#TODO cleanup remote
 #TODO suffix for each file
+#TODO multiple output files
 
 class parallel_runner:
     def __init__(self,config_path,output_suffix,debug_run = False):
@@ -48,34 +49,21 @@ class parallel_runner:
         if self.debug_run:
             print("chmod +x set")
 
-
         ## COPY INPUT TO REMOTE AND RUN
-        if self.config[n]['arg_type'].lower() == 'params':
-            if self.config[n]['output_type'].lower() == 'stdout':
-                self.remote_pid = self.ssh(n,'nohup %s %s >%s & echo $!'%(self.config[n]['remote_script_path'],self.config[n]['arg_params'],os.path.join(self.config[n]['remote_path'],'outputfile_node_%d' % self.config[n]['node_idx'])))
-                if self.debug_run:
-                    print("params->stdout ran")
-            elif self.config[n]['output_type'].lower() == 'file':
-                self.remote_pid = self.ssh(n,'nohup %s %s >&- & echo $!'%(self.config[n]['remote_script_path'],self.config[n]['arg_params']))
-                if self.debug_run:
-                    print("params->file ran")
-        elif self.config[n]['arg_type'].lower() == 'file':
-            while ntpath.basename(self.config[n]['arg_file_path']) not in self.ssh(n,'ls %s'%self.config[n]['remote_path']):
-                self.scp(n,self.config[n]['arg_file_path'],'%s:%s' % (self.config[n]['hostname'], self.config[n]['remote_path']))
+        if self.config[n]['arg_type'].lower() == 'params+file':
+            while ntpath.basename(self.config[n]['arg_file_path']) not in self.ssh(n, 'ls %s' % self.config[n][
+                'remote_path']):
+                self.scp(n, self.config[n]['arg_file_path'],
+                         '%s:%s' % (self.config[n]['hostname'], self.config[n]['remote_path']))
                 time.sleep(1)
-                if self.debug_run:
-                    print("file arg copied ")
-            if self.config[n]['output_type'].lower() == 'stdout':
-                self.remote_pid = self.ssh(n,'nohup %s %s >%s & echo $!'%(self.config[n]['remote_script_path'],os.path.join(self.config[n]['remote_path'],
-                            self.config[n]['arg_filename']),os.path.join(self.config[n]['remote_path'],
-                                                            'outputfile_node_%d' % self.config[n]['node_idx'])))
-                if self.debug_run:
-                    print("file->stdout ran")
-
-            elif self.config[n]['output_type'].lower() == 'file':
-                self.remote_pid = self.ssh(n,'nohup %s %s >&- & echo $!'%(self.config[n]['remote_script_path'], os.path.join(self.config[n]['remote_path'],self.config[n]['arg_filename'])))
-                if self.debug_run:
-                    print("file->file ran")
+        if self.config[n]['output_type'].lower() in ['stdout','stdout+file']:
+            self.remote_pid = self.ssh(n,'nohup %s %s >%s & echo $!'%(self.config[n]['remote_script_path'],self.config[n]['arg_params'],os.path.join(self.config[n]['remote_path'],'outputfile_node_%d' % self.config[n]['node_idx'])))
+            if self.debug_run:
+                print("params->stdout ran")
+        elif self.config[n]['output_type'].lower() == 'file':
+            self.remote_pid = self.ssh(n,'nohup %s %s >&- & echo $!'%(self.config[n]['remote_script_path'],self.config[n]['arg_params']))
+            if self.debug_run:
+                print("params->file ran")
 
         self.remote_pid = self.remote_pid[0]
         all_pids.append((n,self.remote_pid))
@@ -91,6 +79,13 @@ class parallel_runner:
             elif self.config[n]['output_type'] == 'file':
                 # file_name, file_extension = os.path.splitext(self.config[n]['output_filename'])
                 self.scp(n,'%s:%s' % (self.config[n]['hostname'],os.path.join(self.config[n]['remote_path'], self.config[n]['output_filename'])),os.path.join(self.config[n]['local_output_path'], ''))
+            elif self.config[n]['output_type'] == 'stdout+file':
+                self.scp(n, '%s:%s' % (self.config[n]['hostname'],
+                                       os.path.join(self.config[n]['remote_path'], 'outputfile_node_%d' % (n_idx))),
+                         os.path.join(self.config[n]['local_output_path'], ''))
+                self.scp(n, '%s:%s' % (self.config[n]['hostname'],
+                                       os.path.join(self.config[n]['remote_path'], self.config[n]['output_filename'])),
+                         os.path.join(self.config[n]['local_output_path'], ''))
             all_pids.remove((n, self.config[n]['pid']))
             print("Results from %s collected"%n)
 
@@ -146,17 +141,20 @@ class parallel_runner:
                 raise ValueError("%s: 'remote_path' keyword is missing" % n)
             if 'arg_type' not in self.config[n].keys():
                 raise ValueError("%s: 'arg_type' keyword is missing" % n)
-            if self.config[n]['arg_type'] == 'file':
+
+            if self.config[n]['arg_type'] == 'params':
+                if 'arg_params' not in self.config[n].keys():
+                    raise ValueError("%s: 'arg_type' is defined as params, but 'arg_params' keyword is missing" % n)
+            elif self.config[n]['arg_type'] == 'params+file':
+                if 'arg_params' not in self.config[n].keys():
+                    raise ValueError("%s: 'arg_type' is defined as params+file, in this case the 'arg_params' is also needed but 'arg_params' keyword is missing" % n)
                 if 'arg_file_path' not in self.config[n].keys():
                     raise ValueError("%s: arg_type is defined as file, but 'arg_file_path' keyword is missing" % n)
                 if not os.path.isfile(self.config[n]['arg_file_path']):
                     raise ValueError("%s: The arg file %s does not exists" % (n, self.config[n]['arg_file_path']))
-            elif self.config[n]['arg_type'] == 'params':
-                if 'arg_params' not in self.config[n].keys():
-                    raise ValueError("%s: 'arg_type' is defined as params, but 'arg_params' keyword is missing" % n)
             if 'output_type' not in self.config[n].keys():
                 raise ValueError("%s: 'output_type' keyword is missing" % n)
-            if self.config[n]['output_type'] == 'file':
+            if self.config[n]['output_type'] in ['file' ,'stdout+file'] :
                 if 'output_filename' not in self.config[n].keys():
                     raise ValueError("%s: 'output_type' is defined as file, but 'output_filename' keyword is missing" % n)
             if 'local_output_path' not in self.config[n].keys():
@@ -206,12 +204,8 @@ if __name__ == '__main__':
     process_num_collect = args.CProcNum[0] if type(args.CProcNum) == list else args.CProcNum
     output_suffix = args.suffix[0] if  type(args.suffix) == list else args.suffix
     nometa = args.nometa
-
     # print(args)
     # sys.exit()
-
-
-
     all_pids = Manager().list()
     parallel_jobs = parallel_runner(config_path,output_suffix)
     all_jobs = [(parallel_jobs,n_idx,n, all_pids) for n_idx,n in enumerate(parallel_jobs.config)]

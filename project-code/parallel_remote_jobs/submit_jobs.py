@@ -18,7 +18,6 @@ import pickle
 from datetime import datetime
 
 #TODO cleanup remote
-#TODO suffix for each file
 #TODO multiple output files
 
 class run_in_parallel:
@@ -30,18 +29,23 @@ class run_in_parallel:
         for n_idx, n in enumerate(self.config):
             self.config[n]['node'] = n
             self.config[n]['node_idx'] = n_idx
+            self.config[n]['sshconfigpath'] = os.path.expanduser(self.config[n]['sshconfigpath'])
+            self.config[n]['local_output_path'] = os.path.expanduser(self.config[n]['local_output_path'])
+            self.config[n]['script_path'] = os.path.expanduser(self.config[n]['script_path'])
             self.config[n]['script_name'] = ntpath.basename(self.config[n]['script_path'])
+            self.config[n]['script_name_with_suffix'] = self.add_suffix_to_path(self.config[n]['script_name'])
             self.config[n]['remote_path'] = self.ssh(n, 'cd %s && pwd' % self.config[n]['remote_path'])[0]
             if self.config[n]['arg_type'].lower() == 'file':
-                self.config[n]['arg_filename'] = ntpath.basename(self.config[n]['arg_file_path'])
-            self.config[n]['remote_script_path'] = os.path.join(self.config[n]['remote_path'], self.config[n]['script_name'])
+                self.config[n]['arg_filename'] = os.path.expanduser(ntpath.basename(self.config[n]['arg_file_path']))
+            # self.config[n]['remote_script_path'] = os.path.join(self.config[n]['remote_path'], self.config[n]['script_name'])
+            self.config[n]['remote_script_path'] = os.path.join(self.config[n]['remote_path'], self.config[n]['script_name_with_suffix'])
             if not os.path.exists(self.config[n]['local_output_path']):
                 os.makedirs(self.config[n]['local_output_path'])
 
     def run_remote_job(self,n_idx,n, all_pids):
         ## COPY SCRIPT TO REMOTE
-        while self.config[n]['script_name'] not in self.ssh(n,'ls %s'%self.config[n]['remote_path']):
-            self.scp(n,self.config[n]['script_path'],'%s:%s' % (self.config[n]['hostname'], self.config[n]['remote_path']))
+        while self.config[n]['script_name_with_suffix'] not in self.ssh(n,'ls %s'%self.config[n]['remote_path']):
+            self.scp(n,self.config[n]['script_path'],'%s:%s' % (self.config[n]['hostname'], os.path.join(self.config[n]['remote_path'],self.config[n]['script_name_with_suffix'])))
             time.sleep(1)
         if self.debug_run:
             print("script copied")
@@ -51,13 +55,12 @@ class run_in_parallel:
 
         ## COPY INPUT TO REMOTE AND RUN
         if self.config[n]['arg_type'].lower() == 'params+file':
-            while ntpath.basename(self.config[n]['arg_file_path']) not in self.ssh(n, 'ls %s' % self.config[n][
-                'remote_path']):
+            while ntpath.basename(self.config[n]['arg_file_path']) not in self.ssh(n, 'ls %s' % self.config[n]['remote_path']):
                 self.scp(n, self.config[n]['arg_file_path'],
                          '%s:%s' % (self.config[n]['hostname'], self.config[n]['remote_path']))
                 time.sleep(1)
         if self.config[n]['output_type'].lower() in ['stdout','stdout+file']:
-            self.remote_pid = self.ssh(n,'nohup %s %s >%s & echo $!'%(self.config[n]['remote_script_path'],self.config[n]['arg_params'],os.path.join(self.config[n]['remote_path'],'outputfile_node_%d' % self.config[n]['node_idx'])))
+            self.remote_pid = self.ssh(n,'nohup %s %s >%s & echo $!'%(self.config[n]['remote_script_path'],self.config[n]['arg_params'],os.path.join(self.config[n]['remote_path'],self.add_suffix_to_path('outputfile_node_%d' % self.config[n]['node_idx']))))
             if self.debug_run:
                 print("params->stdout ran")
         elif self.config[n]['output_type'].lower() == 'file':
@@ -75,13 +78,12 @@ class run_in_parallel:
         self.ps_output = self.ssh(n,'ps', '-ef', '|', 'grep', self.config[n]['pid'], '|', 'grep -v grep')
         if len(self.ps_output) == 0 :
             if self.config[n]['output_type'] == 'stdout':
-                self.scp(n,'%s:%s' % (self.config[n]['hostname'], os.path.join(self.config[n]['remote_path'],'outputfile_node_%d' % (n_idx))),os.path.join(self.config[n]['local_output_path'], ''))
+                self.scp(n,'%s:%s' % (self.config[n]['hostname'], os.path.join(self.config[n]['remote_path'],self.add_suffix_to_path('outputfile_node_%d' % (n_idx)))),os.path.join(self.config[n]['local_output_path'], ''))
             elif self.config[n]['output_type'] == 'file':
-                # file_name, file_extension = os.path.splitext(self.config[n]['output_filename'])
                 self.scp(n,'%s:%s' % (self.config[n]['hostname'],os.path.join(self.config[n]['remote_path'], self.config[n]['output_filename'])),os.path.join(self.config[n]['local_output_path'], ''))
             elif self.config[n]['output_type'] == 'stdout+file':
                 self.scp(n, '%s:%s' % (self.config[n]['hostname'],
-                                       os.path.join(self.config[n]['remote_path'], 'outputfile_node_%d' % (n_idx))),
+                                       os.path.join(self.config[n]['remote_path'], self.add_suffix_to_path('outputfile_node_%d' % (n_idx)))),
                          os.path.join(self.config[n]['local_output_path'], ''))
                 self.scp(n, '%s:%s' % (self.config[n]['hostname'],
                                        os.path.join(self.config[n]['remote_path'], self.config[n]['output_filename'])),
@@ -131,11 +133,11 @@ class run_in_parallel:
                 raise ValueError("%s: 'hostname' keyword is missing"%n)
             if 'sshconfigpath' not in self.config[n].keys():
                 raise ValueError("%s: 'sshconfigpath' keyword is missing" % n)
-            if not os.path.isfile(self.config[n]['sshconfigpath']):
+            if not os.path.isfile(os.path.expanduser(self.config[n]['sshconfigpath'])):
                 raise ValueError("%s: The ssh config file %s does not exists" % (n,self.config[n]['sshconfigpath']))
             if 'script_path' not in self.config[n].keys():
                 raise ValueError("%s: 'script_path' keyword is missing" % n)
-            if not os.path.isfile(self.config[n]['script_path']):
+            if not os.path.isfile(os.path.expanduser(self.config[n]['script_path'])):
                 raise ValueError("%s: The script file %s does not exists" % (n, self.config[n]['script_path']))
             if 'remote_path' not in self.config[n].keys():
                 raise ValueError("%s: 'remote_path' keyword is missing" % n)
@@ -150,21 +152,32 @@ class run_in_parallel:
                     raise ValueError("%s: 'arg_type' is defined as params+file, in this case the 'arg_params' is also needed but 'arg_params' keyword is missing" % n)
                 if 'arg_file_path' not in self.config[n].keys():
                     raise ValueError("%s: arg_type is defined as file, but 'arg_file_path' keyword is missing" % n)
-                if not os.path.isfile(self.config[n]['arg_file_path']):
+                if not os.path.isfile(os.path.expanduser(self.config[n]['arg_file_path'])):
                     raise ValueError("%s: The arg file %s does not exists" % (n, self.config[n]['arg_file_path']))
             if 'output_type' not in self.config[n].keys():
                 raise ValueError("%s: 'output_type' keyword is missing" % n)
             if self.config[n]['output_type'] in ['file' ,'stdout+file'] :
                 if 'output_filename' not in self.config[n].keys():
                     raise ValueError("%s: 'output_type' is defined as file, but 'output_filename' keyword is missing" % n)
+                else:
+                    print("Warning: output_filename is defined meaning that the program will produce a file in the remote. "
+                          "In this case, if you run the same parallel batch jobs multiple times in the remote, the output files will be "
+                          "overridden.")
             if 'local_output_path' not in self.config[n].keys():
                 raise ValueError("%s: 'local_output_path' keyword is missing" % n)
 
     def sync_pids_with_config(self):
         for item in self.all_pids:
             self.config[item[0]]['pid'] = item[1]
-            # self.config[item[0]]['results_collected'] = False
 
+
+    def add_suffix_to_path(self,path):
+        dir_path = os.path.dirname(path)
+        full_filename = os.path.basename(path)
+        filename, fileextention =  os.path.splitext(full_filename)
+        full_filename_new = filename + self.output_suffix + fileextention
+        new_path = os.path.join(dir_path,full_filename_new)
+        return new_path
 
 def run_method_in_parallel(args):
     return args[0].run_remote_job(args[1],args[2],args[3])

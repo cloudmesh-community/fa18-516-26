@@ -20,82 +20,83 @@ class parallel_runner:
         self.config_validator(config_path)
         if not os.path.exists('output'):
             os.makedirs('output')
-
-    def run_remote_job(self,n_idx,n):
-        debug=1
+        self.all_pids = []
+    def run_remote_job(self,n_idx,n, all_pids):
+        debug=0
         # for n_idx,n in enumerate(self.config):
-        self.current_node = self.config[n]
-        self.current_node['node'] = n
-        self.current_node['node_idx'] = n_idx
-        self.current_node['script_name'] = ntpath.basename(self.current_node['script_path'])
-        self.current_node['remote_path'] = self.ssh('cd %s && pwd'%self.current_node['remote_path'])[0]
-        if self.current_node['arg_type'].lower() == 'file':
-            self.current_node['arg_filename'] = ntpath.basename(self.current_node['arg_file_path'])
-        self.current_node['remote_script_path'] = os.path.join(self.current_node['remote_path'], self.current_node['script_name']) #'uname -a > outputfile'
+        self.config[n]['node'] = n
+        self.config[n]['node_idx'] = n_idx
+        self.config[n]['script_name'] = ntpath.basename(self.config[n]['script_path'])
+        self.config[n]['remote_path'] = self.ssh(n,'cd %s && pwd'%self.config[n]['remote_path'])[0]
+        if self.config[n]['arg_type'].lower() == 'file':
+            self.config[n]['arg_filename'] = ntpath.basename(self.config[n]['arg_file_path'])
+        self.config[n]['remote_script_path'] = os.path.join(self.config[n]['remote_path'], self.config[n]['script_name']) #'uname -a > outputfile'
 
         ## COPY SCRIPT TO REMOTE
-        while self.current_node['script_name'] not in self.ssh('ls %s'%self.current_node['remote_path']):
-            self.scp(self.current_node['script_path'],
-                     '%s:%s' % (self.current_node['hostname'], self.current_node['remote_path']))
+        while self.config[n]['script_name'] not in self.ssh(n,'ls %s'%self.config[n]['remote_path']):
+            self.scp(n,self.config[n]['script_path'],'%s:%s' % (self.config[n]['hostname'], self.config[n]['remote_path']))
             time.sleep(1)
         if debug==1:
             print("script copied")
-        self.ssh('chmod +x' , self.current_node['remote_script_path'])
+        self.ssh(n,'chmod +x' , self.config[n]['remote_script_path'])
         if debug==1:
             print("chmod +x set")
 
 
         ## INPUT
-        if self.current_node['arg_type'].lower() == 'params':
-            if self.current_node['output_type'].lower() == 'stdout':
-                self.remote_pid = self.ssh('nohup %s %s >%s & echo $!'%(self.current_node['remote_script_path'],self.current_node['arg_params'],os.path.join(self.current_node['remote_path'],'outputfile_node_%d' % self.current_node['node_idx'])))
+        if self.config[n]['arg_type'].lower() == 'params':
+            if self.config[n]['output_type'].lower() == 'stdout':
+                self.remote_pid = self.ssh(n,'nohup %s %s >%s & echo $!'%(self.config[n]['remote_script_path'],self.config[n]['arg_params'],os.path.join(self.config[n]['remote_path'],'outputfile_node_%d' % self.config[n]['node_idx'])))
                 if debug==1:
                     print("params->stdout ran")
-            elif self.current_node['output_type'].lower() == 'file':
-                self.remote_pid = self.ssh('nohup %s %s >&- & echo $!'%(self.current_node['remote_script_path'],self.current_node['arg_params']))
+            elif self.config[n]['output_type'].lower() == 'file':
+                self.remote_pid = self.ssh(n,'nohup %s %s >&- & echo $!'%(self.config[n]['remote_script_path'],self.config[n]['arg_params']))
                 if debug==1:
                     print("params->file ran")
-        elif self.current_node['arg_type'].lower() == 'file':
-            while ntpath.basename(self.current_node['arg_file_path']) not in self.ssh('ls %s'%self.current_node['remote_path']):
-                self.scp(self.current_node['arg_file_path'],'%s:%s' % (self.current_node['hostname'], self.current_node['remote_path']))
+        elif self.config[n]['arg_type'].lower() == 'file':
+            while ntpath.basename(self.config[n]['arg_file_path']) not in self.ssh(n,'ls %s'%self.config[n]['remote_path']):
+                self.scp(n,self.config[n]['arg_file_path'],'%s:%s' % (self.config[n]['hostname'], self.config[n]['remote_path']))
                 time.sleep(1)
                 if debug==1:
                     print("file arg copied ")
-            if self.current_node['output_type'].lower() == 'stdout':
-                self.remote_pid = self.ssh('nohup %s %s >%s & echo $!'%(self.current_node['remote_script_path'],os.path.join(self.current_node['remote_path'],
-                            self.current_node['arg_filename']),os.path.join(self.current_node['remote_path'],
-                                                            'outputfile_node_%d' % self.current_node['node_idx'])))
+            if self.config[n]['output_type'].lower() == 'stdout':
+                self.remote_pid = self.ssh(n,'nohup %s %s >%s & echo $!'%(self.config[n]['remote_script_path'],os.path.join(self.config[n]['remote_path'],
+                            self.config[n]['arg_filename']),os.path.join(self.config[n]['remote_path'],
+                                                            'outputfile_node_%d' % self.config[n]['node_idx'])))
                 if debug==1:
                     print("file->stdout ran")
 
-            elif self.current_node['output_type'].lower() == 'file':
-                self.remote_pid = self.ssh('nohup %s %s >&- & echo $!'%(self.current_node['remote_script_path'], os.path.join(self.current_node['remote_path'],self.current_node['arg_filename'])))
+            elif self.config[n]['output_type'].lower() == 'file':
+                self.remote_pid = self.ssh(n,'nohup %s %s >&- & echo $!'%(self.config[n]['remote_script_path'], os.path.join(self.config[n]['remote_path'],self.config[n]['arg_filename'])))
                 if debug==1:
                     print("file->file ran")
 
         self.remote_pid = self.remote_pid[0]
+        all_pids.append((n,self.remote_pid))
         print(self.remote_pid)
 
-    def collect_result(self):
-        print(self.remote_pid)
-        ## Check if output is ready
-        self.ps_output = ''
-        while self.ps_output is not None:
-            self.ps_output = self.ssh('ps', '-ef', '|', 'grep', self.remote_pid, '|', 'grep -v grep')
-            time.sleep(2)
+    def collect_result(self,n_idx,n,all_pids):
+        # if  self.config[n]['results_collected'] == False:
+        self.ps_output = self.ssh(n,'ps', '-ef', '|', 'grep', self.config[n]['pid'], '|', 'grep -v grep')
         ## OUTPUT
-        if self.current_node['output_type'] == 'stdout':
-            self.scp('%s:%s' % (self.current_node['hostname'], os.path.join(self.current_node['remote_path'],
-                                                                            'outputfile_node_%d' % self.current_node[
-                                                                                'node_idx'])),
-                     os.path.join(self.current_node['local_output_path'], ''))
-        elif self.current_node['output_type'] == 'file':
-            self.scp('%s:%s' % (self.current_node['hostname'],
-                                os.path.join(self.current_node['remote_path'], self.current_node['output_filename'])),
-                     os.path.join(self.current_node['local_output_path'], ''))
+        #self.ps_output is not None and
+        if len(self.ps_output) == 0 :
+            if self.config[n]['output_type'] == 'stdout':
+                self.scp(n,'%s:%s' % (self.config[n]['hostname'], os.path.join(self.config[n]['remote_path'],'outputfile_node_%d' % n_idx)),os.path.join(self.config[n]['local_output_path'], ''))
+            elif self.config[n]['output_type'] == 'file':
+                self.scp(n,'%s:%s' % (self.config[n]['hostname'],os.path.join(self.config[n]['remote_path'], self.config[n]['output_filename'])),os.path.join(self.config[n]['local_output_path'], ''))
+            all_pids.remove((n, self.config[n]['pid']))
+            print("Results from node %s collected"%n)
+            # self.config[n]['results_collected'] = True
+        # else:
+        #     time.sleep(3)
+
+
 
     def ssh(self,*args):
-        ssh = subprocess.Popen(["ssh", self.current_node['hostname'] , '-F', self.current_node['sshconfigpath'], *args ],
+        n = args[0]
+        args = args[1:]
+        ssh = subprocess.Popen(["ssh", self.config[n]['hostname'] , '-F', self.config[n]['sshconfigpath'], *args ],
                                shell=False,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
@@ -103,14 +104,15 @@ class parallel_runner:
         if result == []:
             error = ssh.stderr.readlines()
             if len(error) > 0:
-                print("ERROR in host %s: %s" % (self.current_node['hostname'],error))
+                print("ERROR in host %s: %s" % (self.config[n]['hostname'],error))
             return []
         else:
             return [x.decode('utf-8').strip('\n') for x in result]
-        #[0].decode('utf-8')
 
     def scp(self, *args):
-        ssh = subprocess.Popen(["scp", '-F', self.current_node['sshconfigpath'], *args],
+        n = args[0]
+        args = args[1:]
+        ssh = subprocess.Popen(["scp", '-F', self.config[n]['sshconfigpath'], *args],
                                shell=False,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
@@ -118,7 +120,7 @@ class parallel_runner:
         if middle_result == []:
             error = ssh.stderr.readlines()
             if len(error) > 0:
-                print("ERROR in host %s: %s" % (self.current_node['hostname'], error))
+                print("ERROR in host %s: %s" % (self.config[n]['hostname'], error))
 
     def config_validator(self,config_path):
         self.config_path = config_path
@@ -157,15 +159,31 @@ class parallel_runner:
             if 'local_output_path' not in self.config[n].keys():
                 raise ValueError("%s: 'local_output_path' keyword is missing" % n)
 
-
-
+    def sync_pids_with_config(self):
+        for item in self.all_pids:
+            self.config[item[0]]['pid'] = item[1]
+            # self.config[item[0]]['results_collected'] = False
 
 
 def run_method_in_parallel(args):
-    return args[0].run_remote_job(args[1],args[2])
+    return args[0].run_remote_job(args[1],args[2],args[3])
+
+def collect_results_in_parallel(args):
+    return args[0].collect_result(args[1],args[2],args[3])
+
 
 if __name__ == '__main__':
+    all_pids = Manager().list()
     parallel_jobs = parallel_runner("config_file.ini")
-    all_jobs = [(parallel_jobs,n_idx,n) for n_idx,n in enumerate(parallel_jobs.config)]
+    all_jobs = [(parallel_jobs,n_idx,n, all_pids) for n_idx,n in enumerate(parallel_jobs.config)]
     pool = Pool(processes=4)
     pool.map(run_method_in_parallel,all_jobs)
+    parallel_jobs.all_pids = all_pids
+    parallel_jobs.sync_pids_with_config()
+    print("collecting results")
+    while len(all_pids)> 0 :
+        all_running_jobs = [(parallel_jobs, n_idx, n, all_pids) for n_idx, n in enumerate(parallel_jobs.config) if (n,parallel_jobs.config[n]['pid']) in all_pids]
+        pool.map(collect_results_in_parallel, all_running_jobs)
+        print ("waiting for other results...")
+        time.sleep(3)
+    # print(parallel_jobs.config)

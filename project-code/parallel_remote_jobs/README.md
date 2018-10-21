@@ -3,8 +3,8 @@
 This is a tool to submit jobs to remote hosts in parallel:
 
 ```console
-$ ./run_in_parallel.py
-usage: run_in_parallel.py [-h] [--CProcNum Num] [--suffix suffix] [--nometa]
+$ ./submit_jobs.py
+usage: submit_jobs.py [-h] [--CProcNum Num] [--suffix suffix] [--nometa]
                           ConfPath ProcNum
 
 Running remote parallel jobs
@@ -26,7 +26,7 @@ optional arguments:
 The two mandatory arguments are `ConfPath` defining the path of the configuration file and `ProcNum` which indicates the number of process that will be used to submit the jobs. The optional argument `CProcNum` defines the number of processes that will be used for collecting the results. The `suffix` can be used for distinguishing several instances of the same runs on same set of nodes and the `nometa` flag is in case the user does not want to keep the metadata. The metadata can be later used for retrieving the results that needs a lot of time to run and you do not want to let the script run for that amount of time. This is a sample usage of this tool:
 
 ```console
-$ ./run_in_parallel.py config_file.ini 4
+$ ./submit_jobs.py config_file.ini 4
 Remote Pid on NODE4: 29418
 Remote Pid on NODE3: 29422
 Remote Pid on NODE1: 20616

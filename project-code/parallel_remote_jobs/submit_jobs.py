@@ -21,7 +21,7 @@ from datetime import datetime
 #TODO suffix for each file
 #TODO multiple output files
 
-class parallel_runner:
+class run_in_parallel:
     def __init__(self,config_path,output_suffix,debug_run = False):
         self.debug_run = debug_run
         self.config_validator(config_path)
@@ -207,7 +207,7 @@ if __name__ == '__main__':
     # print(args)
     # sys.exit()
     all_pids = Manager().list()
-    parallel_jobs = parallel_runner(config_path,output_suffix)
+    parallel_jobs = run_in_parallel(config_path,output_suffix)
     all_jobs = [(parallel_jobs,n_idx,n, all_pids) for n_idx,n in enumerate(parallel_jobs.config)]
     pool = Pool(processes=process_num_submit)
     pool.map(run_method_in_parallel,all_jobs)

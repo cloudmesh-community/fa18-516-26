@@ -268,9 +268,9 @@ if __name__ == '__main__':
                 time.sleep(3)
                 all_running_jobs = [(parallel_jobs, n_idx, n, all_pids) for n_idx, n in enumerate(parallel_jobs.config) if (n,parallel_jobs.config[n]['pid']) in all_pids]
                 pool.map(collect_results_in_parallel, all_running_jobs)
-                print ("waiting for other results...")
+                print ("waiting for other results if any...")
 
-            print("All of the remote results collected")
+            print("All of the remote results collected.")
     else:
         if not os.path.isfile(metadatapath):
             raise FileExistsError("The metadata file %s does not exist."%metadatapath)
@@ -287,4 +287,5 @@ if __name__ == '__main__':
             time.sleep(3)
             all_running_jobs = [(parallel_jobs, n_idx, n, all_pids) for n_idx, n in enumerate(parallel_jobs.config) if (n,parallel_jobs.config[n]['pid']) in all_pids]
             pool.map(collect_results_in_parallel, all_running_jobs)
-            print ("waiting for other results...")
+            print ("waiting for other results if any...")
+        print("All of the remote results collected.")

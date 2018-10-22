@@ -28,7 +28,7 @@ optional arguments:
                        using its metadata file. (default: None)
 
 ```
-The two mandatory arguments are `ConfPath` defining the path of the configuration file and `ProcNum` which indicates the number of process that will be used to submit the jobs. The optional argument `CProcNum` defines the number of processes that will be used for collecting the results. The `suffix` can be used for distinguishing several instances of the same runs on same set of nodes and the `nometa` flag is in case the user does not want to keep the metadata. The metadata can be later used for retrieving the results that needs a lot of time to run and you do not want to let the script run for that amount of time. For this purpose, the `--nodownload` argument should be used, indicating the script is not expected to wait for the results to be downloaded. When later on you wanted to download the results, you can use the `--download` argument followed by the path of the metadata file.  
+The two mandatory arguments are `ConfPath` defining the path of the configuration file and `ProcNum` which indicates the number of process that will be used to submit the jobs. The optional argument `CProcNum` defines the number of processes that will be used for collecting the results. The `suffix` can be used for distinguishing several instances of the same runs on same set of nodes and the `nometa` flag is in case the user does not want to keep the metadata. The metadata can be later used for retrieving the results that needs a lot of time to run and you do not want to let the script run for that amount of time. For this purpose, the `--nodownload` argument should be used, indicating the script is not expected to wait for the results to be downloaded. When later on you wanted to download the results, you can use the `--download` argument followed by the path of the metadata file.
 
 This is a sample usage of this tool:
 
@@ -50,6 +50,27 @@ waiting for other results...
 All of the remote results collected
 ```
 
+An example of a run, downloaded later is as follows:
+```console
+$ ./submit_jobs.py config_file.ini 5 --nodownload
+Remote Pid on NODE1: 3449
+Remote Pid on NODE5: 3557
+Remote Pid on NODE2: 3564
+Remote Pid on NODE3: 20062
+Remote Pid on NODE4: 20067
+metadata saved.
+$
+$
+$ ./submit_jobs.py config_file.ini 1 --download metadata/md_20181021_23152131.pkl
+collecting results
+Results from NODE1 collected
+Results from NODE2 collected
+Results from NODE3 collected
+Results from NODE4 collected
+Results from NODE5 collected
+waiting for other results if any...
+All of the remote results collected.
+```
 
 ### Configuration file
 

@@ -4,6 +4,7 @@ owner:
   lastname: "Andalibi"
   hid: "fa18-516-26"
   community: "e516"
+  semester: fa18
 section:
   - title: Lambda Expressions
     url: https://github.com/cloudmesh-community/book/blob/master/chapters/prg/python/python.md#lambda-expressions-new
@@ -17,7 +18,7 @@ paper:
     keyword: OpenWhisk
     url: https://github.com/cloudmesh-community/book/blob/master/chapters/faas/openwhisk.md
 project:
-  - title: TBD
+  - title: Develope the remote parallel jobs tool with slurm support and experiment interface
     url: TBD 
 other:
   - activity: Fixing typos in md files

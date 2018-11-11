@@ -85,3 +85,11 @@ I was concentrating on reading the book. On the technical side, I was working on
   ```
 
 * `README` of virtual cluster tool is updated and examples of `cm4 vcluster` added. 
+
+# Week Fri 11/2/18 - Thu 11/8/18
+
+I had a midterm this week + 2 assignment, therefore could not work on the project very much 
+
+# Week Fri 11/9/18 - Thu 11/15/18
+
+* Starting the `cm4 batch5` as a subcommand for slurm 

@@ -92,4 +92,5 @@ I had a midterm this week + 2 assignment, therefore could not work on the projec
 
 # Week Fri 11/9/18 - Thu 11/15/18
 
-* Starting the `cm4 batch5` as a subcommand for slurm 
+* Starting the `cm4 batch` as a subcommand for slurm suport
+

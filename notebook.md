@@ -94,3 +94,10 @@ I had a midterm this week + 2 assignment, therefore could not work on the projec
 
 * Starting the `cm4 batch` as a subcommand for slurm suport
 
+# Week Fri 11/16/18 - Thu 11/22/18
+
+Thanksgiving break 
+
+# Week Fri 11/23/18 - Thu 11/29/18
+
+Checking the status of the repository as well as continue preparing to code slurm in cm3 (batch)

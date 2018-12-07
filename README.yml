@@ -18,8 +18,10 @@ paper:
     keyword: OpenWhisk
     url: https://github.com/cloudmesh-community/book/blob/master/chapters/faas/openwhisk.md
 project:
-  - title: Develope the remote parallel jobs tool with slurm support and experiment interface
+  - title: Developing the virtual cluster tools in cm4 (cm4 vcluster)
     url: https://github.com/cloudmesh-community/cm/tree/master/cm4/vcluster
+  - title: Developing the batch tool for slurm cluster in cm4 (cm4 batch)
+    url: https://github.com/cloudmesh-community/cm/tree/master/cm4/batch 
 other:
   - activity: Fixing typos in md files
     url: https://github.com/cloudmesh-community/book/commit/e0df3d097935f09fc8abffd7801f0c3b5d01ec42

@@ -94,9 +94,17 @@ I had a midterm this week + 2 assignment, therefore could not work on the projec
 
 * Starting the `cm4 batch` as a subcommand for slurm suport
 
-# 3 Weeks Fri 11/16/18 - Thu 12/6/18
+# Week Fri 11/16/18 - Thu 11/22/18
 
-* `cm4 batch` for SLURM clusters added and documentation written. The tool contains the following commands: 
+Thanksgiving break 
+
+# Week Fri 11/23/18 - Thu 11/29/18
+
+Checking the status of the repository as well as continue preparing to code slurm in cm4 (batch)
+
+# Week Fri 11/29/18 - Thu 12/6/18
+
+- `cm4 batch` for SLURM clusters added and documentation written. The tool contains the following commands: 
 
   ```
         cm4 batch create-job JOB_NAME --slurm-script=SLURM_SCRIPT_PATH --input-type=INPUT_TYPE --slurm-cluster=SLURM_CLUSTER_NAME --job-script-path=SCRIPT_PATH --remote-path=REMOTE_PATH --local-path=LOCAL_PATH [--argfile-path=ARGUMENT_FILE_PATH] [--outfile-name=OUTPUT_FILE_NAME] [--suffix=SUFFIX] [--overwrite]

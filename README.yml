@@ -20,6 +20,8 @@ paper:
 project:
   - title: HPC Batch Abstraction for CLoudmesh
     url: https://github.com/cloudmesh/cloudmesh-batch/blob/master/README.md
+    pytest:
+      - https://github.com/cloudmesh/cloudmesh-batch/blob/master/TBD.py
 other:
   - activity: Fixing typos in md files
     url: https://github.com/cloudmesh-community/book/commit/e0df3d097935f09fc8abffd7801f0c3b5d01ec42
